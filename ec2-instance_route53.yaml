@@ -8,6 +8,9 @@
     domain_name: "vamsimln.online"
     instances:
     - mongodb
+    - mysql
+    - redis
+    
   tasks:
   - name: create ec2 instance
     amazon.aws.ec2_instance:
