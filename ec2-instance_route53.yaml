@@ -3,7 +3,7 @@
   connection: local
   vars:
     ami_id: ami-09c813fb71547fc4f 
-    sg_id: sg-0efb46bbc7c5d112f
+    sg_id: sg-0efb46bbc7c5d112f   
     zone_id: "Z02155239UQ5JEVY7T4S"
     domain_name: "vamsimln.online"
     instances:
@@ -19,7 +19,25 @@
         Name: "{{ item }}"
     loop: "{{ instances }}"
     register: ec2_output
-    
+
   - name: print ec2_output
     ansible.builtin.debug:
       msg: "{{ ec2_output }}"
+
+  - name: print public_ip
+    ansible.builtin.debug:
+      msg:"{{ item.instances[0].public_ip_address }}"
+    loop: "{{ ec2_output.results }}"
+
+
+  - name: create route53 records
+    amazon.aws.route53:
+      state: present
+      zone: "{{ domain_name }}"
+      record: "{{ item.item }}.{{domain_name}}"
+      type: A
+      ttl: 1
+      value: "{{item.instance[0].public_ip_address}}"
+      overwrite: true
+    loop: "{{ec2_output.results}}"
+
