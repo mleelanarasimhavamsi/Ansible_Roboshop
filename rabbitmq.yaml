@@ -9,14 +9,14 @@
   
   - name: install rabbitmq server
     ansible.builtin.package:
-      - name: rabbitmq-server
-        state: present
+      name: rabbitmq-server
+      state: present
 
   - name: start and enable rabbitmq server 
     ansible.builtin.service:
-      - name: rabbitmq-server
-        state: started
-        enabled: yes
+      name: rabbitmq-server
+      state: started
+      enabled: yes
 
   - name: create and provide permission to user
     community.rabbitmq.rabbitmq_user:
