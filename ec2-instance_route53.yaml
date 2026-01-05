@@ -10,6 +10,7 @@
     - mongodb
     - mysql
     - redis
+    - rabbitmq
     
   tasks:
   - name: create ec2 instance
