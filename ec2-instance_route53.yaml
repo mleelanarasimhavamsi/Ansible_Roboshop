@@ -24,10 +24,10 @@
     ansible.builtin.debug:
       msg: "{{ ec2_output }}"
 
-  - name: print public_ip
-    ansible.builtin.debug:
-      msg:"{{ item.instances[0].private_ip_address }}"
-    loop: "{{ ec2_output.results }}"
+  # - name: print public_ip
+  #   ansible.builtin.debug:
+  #     msg:"{{ item.instances[0].private_ip_address }}"
+  #   loop: "{{ ec2_output.results }}"
 
 
   - name: create route53 records
