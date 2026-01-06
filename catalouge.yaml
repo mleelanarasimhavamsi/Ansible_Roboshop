@@ -50,15 +50,28 @@
       name: mongodb-mongosh
       state: present
 
-    # -  name: connect to mongodb catalouge
-    #    ansible.builtin.command: mongosh mongodb.daws86s.fun --quiet --eval "db.getMongo().getDBNames().indexOf('catalogue')
-    #    register: catalouge_output
+  - name: connect to mongodb catalouge
+    ansible.builtin.command: mongosh mongodb.vamsimln.online --quiet --eval "db.getMongo().getDBNames().indexOf('catalogue')
+    register: catalouge_output
 
-  - name: evaluate catalouge database
-    community.mongodb.mongodb_shell:
-      eval: db.getMongo().getDBNames().indexOf('catalogue')
-      register: catalouge_output
+  - name: load products in mongodb
+    ansible.builtin.shell: mongosh --host mongodb.vamsimln.online </app/db/master-data.js
+    when: catalouge_output.stdout | int <0
 
-  - name: print catalouge ec2_output
-    ansible.builtin.debug:
-      msg: "{{catalouge_output}}"
+  - name: start and enable catalouge
+    ansible.builtin.service:
+      name: catalouge
+      enable: yes
+      state: started
+
+  # - name: evaluate catalouge database
+  #   community.mongodb.mongodb_shell:
+  #     login_host: mongodb.vamsimln.online
+  #     eval: db.getMongo().getDBNames().indexOf('catalogue')
+  #     register: catalouge_output
+
+  # - name: print catalouge ec2_output
+  #   ansible.builtin.debug:
+  #     msg: "{{catalouge_output}}"
+
+    
