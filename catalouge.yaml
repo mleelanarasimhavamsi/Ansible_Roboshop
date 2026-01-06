@@ -1,5 +1,5 @@
-- name: setup catalogue server
-  hosts: catalogue
+- name: setup catalouge server
+  hosts: catalouge
   become: yes
   tasks:
   - name: disable default nodejs
@@ -31,19 +31,19 @@
       state: directory
       path: /app
 
-  - name: Delete catalogue file
+  - name: Delete catalouge file
     ansible.builtin.file:
-      path: /tmp/catalogue.zip
+      path: /tmp/catalouge.zip
       state: absent
 
-  - name: download catalogue application
+  - name: download catalouge application
     ansible.builtin.get_url:
-      url: https://roboshop-artifacts.s3.amazonaws.com/catalogue-v3.zip
-      dest: /tmp/catalogue.zip
+      url: https://roboshop-artifacts.s3.amazonaws.com/catalouge-v3.zip
+      dest: /tmp/catalouge.zip
 
-  - name: extract catalogue application
+  - name: extract catalouge application
     ansible.builtin.unarchive:
-      src: /tmp/catalogue.zip
+      src: /tmp/catalouge.zip
       dest: /app
       remote_src: yes
 
@@ -51,10 +51,10 @@
     community.general.npm:
       path: /app
 
-  - name: copy catalogue service
+  - name: copy catalouge service
     ansible.builtin.copy:
-      src: catalogue.service
-      dest: /etc/systemd/system/catalogue.service
+      src: catalouge.service
+      dest: /etc/systemd/system/catalouge.service
 
   - name: copy mongo repo
     ansible.builtin.copy:
@@ -66,33 +66,33 @@
       name: mongodb-mongosh
       state: present
 
-  - name: connnect to mongodb catalogue
-    ansible.builtin.command: mongosh mongodb.vamsimln.online --quiet --eval "db.getMongo().getDBNames().indexOf('catalogue')"
-    register: catalogue_output
+  - name: connnect to mongodb catalouge
+    ansible.builtin.command: mongosh mongodb.vamsimln.online --quiet --eval "db.getMongo().getDBNames().indexOf('catalouge')"
+    register: catalouge_output
 
   # - name: evaluate cataalogue database
   #   community.mongodb.mongodb_shell:
   #     login_host: mongodb.daws86s.fun
-  #     eval: db.getMongo().getDBNames().indexOf('catalogue')
-  #   register: catalogue_output
+  #     eval: db.getMongo().getDBNames().indexOf('catalouge')
+  #   register: catalouge_output
 
-  # - name: print catalogue output
+  # - name: print catalouge output
   #   ansible.builtin.debug:
-  #     msg: "{{ catalogue_output }}"
+  #     msg: "{{ catalouge_output }}"
 
   - name: load products into mongodb
     ansible.builtin.shell: mongosh --host mongodb.vamsimln.online </app/db/master-data.js
-    when: catalogue_output.stdout | int < 0
+    when: catalouge_output.stdout | int < 0
 
   # - name: start and enable cataalogue
   #   ansible.builtin.service:
-  #     name: catalogue
+  #     name: catalouge
   #     enabled: yes
   #     state: started
 
   - name: daemon reload enable and start
     ansible.builtin.systemd_service:
-      name: catalogue
+      name: catalouge
       enabled: true
       state: started
       daemon_reload: true
