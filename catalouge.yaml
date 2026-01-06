@@ -12,18 +12,18 @@
     ansible.builtin.package:
       name: nodejs
       state: present
-  
+
   - name: create roboshop system user
     ansible.builtin.user:
       name: roboshop
       comment: roboshop system user
       system: true
       shell: /sbin/nologin
-      home: /app 
-    
+      home: /app
+
   - name: create app directory
     ansible.builtin.file:
-      state: directory 
+      state: directory
       path: /app
   - name: download catologue application
     ansible.builtin.get_url:
@@ -35,3 +35,29 @@
       src: /tmp/catalogue.zip
       dest: /app
       remote_src: yes
+
+  - name: install depencies
+    community.general.npm:
+      path: /app
+
+  - name: copy catalouge services
+    ansible.builtin.copy:
+      src: catalouge.service
+      dest: /etc/systemd/system/catalogue.service
+
+  - name: install mongodb client
+    ansible.builtin.package:
+      name: mongodb-mongosh
+      state: present
+
+    # -  name: connect to mongodb catalouge
+    #    ansible.builtin.command: mongosh mongodb.daws86s.fun --quiet --eval "db.getMongo().getDBNames().indexOf('catalogue')
+    #    register: catalouge_output
+
+  - name: evaluate catalouge database
+    community.mongodb.mongodb_shell:
+      eval: db.getMongo().getDBNames().indexOf('catalogue')
+
+  - name: print catalouge ec2_output
+    ansible.builtin.debug:
+      msg: "{{catalouge_output}}"
